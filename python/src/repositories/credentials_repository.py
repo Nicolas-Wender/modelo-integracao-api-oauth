@@ -6,8 +6,6 @@ Gerencia a persistência de credenciais no BigQuery.
 
 from typing import Any, Dict
 
-import pandas as pd
-
 from src.interfaces.encryption_service_interface import IEncryptionService
 
 from ..interfaces.credentials_repository_interface import ICredentialsRepository
@@ -27,10 +25,10 @@ class CredentialsRepository(ICredentialsRepository):
 
         self._encryption_service = encryption_service
 
-    def get_credentials(self, id: str) -> pd.DataFrame:
+    def get_credentials(self, id: str) -> Dict[str, Any]:
         "requisita os dados na tabela, utilizando o service do bd especificado"
         "deve retornar a linha com o id especificado"
-        return pd.DataFrame()
+        return {}
 
     def save_token(self, id: str, token: Dict[str, Any]) -> None:
         "salva o token na tabela, utilizando o service do bd especificado"

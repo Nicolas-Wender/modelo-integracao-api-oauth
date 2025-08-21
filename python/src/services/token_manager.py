@@ -46,14 +46,10 @@ class TokenManager(ITokenManager):
             if id in self._token_cache:
                 cred = self._token_cache[id]
             else:
-                cred = self.get_token_in_repository(id)
-                cred = {
-                    "access_token": cred["access_token"],
-                    "refresh_token": cred["refresh_token"],
-                    "validade": cred["validade"],
-                }
+                cred = self._credentials_repository.get_credentials(id)
 
             if not self.is_token_valid(cred.get("validade", "")):
+                log.info(f"Token inválido para {id}, atualizando...")
                 cred = self.refresh_token(id, cred)
                 self._credentials_repository.save_token(id, cred)
 
@@ -65,48 +61,7 @@ class TokenManager(ITokenManager):
             log.error(f"Erro ao obter token para {id}: {e}")
             raise
 
-    def get_token_in_repository(self, id: str) -> pd.Series:
-        """
-        Obtém o token armazenado no repositório de credenciais.
-
-        Args:
-            id: Identificador da loja
-
-        Returns:
-            Series com o token armazenado
-        """
-        try:
-            credentials_df = self._credentials_repository.get_credentials(id)
-
-            # verifica se as credenciais foram encontradas
-            if credentials_df.empty:
-                log.warning(f"Credenciais não encontradas para {id}")
-                cred = self._obtain_new_token(id)
-                self._credentials_repository.save_token(id, cred)
-                credentials_df = pd.DataFrame([cred])
-
-            cred = credentials_df.iloc[0]
-
-            # Verifica se as credenciais estão presentes e válidas
-            if (
-                not cred.get("access_token")
-                or cred.get("access_token") == ""
-                or not cred.get("refresh_token")
-                or cred.get("refresh_token") == ""
-            ):
-                log.info(
-                    f"Token expirado ou não encontrado para {id}, obtendo novo token"
-                )
-                cred = self._obtain_new_token(id)
-                self._credentials_repository.save_token(id, cred)
-                cred = credentials_df.iloc[0]
-
-            return cred
-        except Exception as e:
-            log.error(f"Erro ao obter token para {id}: {e}")
-            raise
-
-    def is_token_valid(self, validade: str) -> bool:
+    def is_token_invalid(self, validade: str) -> bool:
         """
         Verifica se o token da loja é válido.
 

@@ -28,27 +28,14 @@ class ITokenManager(ABC):
         pass
 
     @abstractmethod
-    def get_token_in_repository(self, id: str) -> pd.Series:
-        """
-        Obtém o token armazenado no repositório de credenciais.
-
-        Args:
-            id: Identificador da loja
-
-        Returns:
-            Series com o token armazenado
-        """
-        pass
-
-    @abstractmethod
-    def is_token_valid(self, validade: str) -> bool:
+    def is_token_invalid(self, validade: str) -> bool:
         """
         Verifica se o token atual é válido.
 
         Args:
             validade: Data de validade do token
         Returns:
-            True se o token é válido, False caso contrário
+            True se o token é inválido, False caso contrário
         """
         pass
 

@@ -14,7 +14,7 @@ class ICredentialsRepository(ABC):
     """Interface para repositório de credenciais."""
 
     @abstractmethod
-    def get_credentials(self, id: str) -> pd.DataFrame:
+    def get_credentials(self, id: str) -> Dict[str, Any]:
         """
         Obtém as credenciais da loja pelo identificador.
 
